@@ -51,31 +51,4 @@ public class OptionSetting
 
     }
 
-//    OptionSetting()
-//    {
-//        //Create or open a private database called MyContacts.db
-//        contactsDB = SQLiteDatabase.openOrCreateDatabase("SmoothWaiter.db",MODE.PRIVATE,null);
-//        //if creating a new DB, it won't actually create to DB until we do some SQL with it
-//        contactsDB.execSQL("CREATE TABLE IF NOT EXISTS tb_option"
-//                + "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
-//                + " name TEXT,"
-//                + " value TEXT);");
-//    }
-//
-//    public int getTotalRow()
-//    {
-//        Cursor cursor = contactsDB.rawQuery("SELECT COUNT(ID) FROM tb_option",null);
-//
-//        //get data from column
-//        int countID = cursor.getColumnIndex("COUNT(ID)");
-//
-//        return countID;
-////        if(countID < 1)
-////        {
-////            contactsDB.execSQL("INSERT INTO `tb_option`(name,value)"
-////                    + " VALUES ('totalTable','9')");
-////
-////        }
-//    }
-
 }

@@ -77,6 +77,41 @@ public class DatabaseHandler extends SQLiteOpenHelper
         return userCount;
     }
 
+    public int getTotalUser()
+    {
+        int userCount;
+        String countUserSQL = "SELECT * FROM tb_user" ;
+        SQLiteDatabase  db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countUserSQL,null);
+        userCount = cursor.getCount();
+        cursor.close();
+        return userCount;
+    }
+
+    public void createAdminUser()
+    {
+        try
+        {
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put("username", "admin");
+            values.put("password", "admin");
+            values.put("name", "admin");
+            values.put("level", "3");
+
+
+            // Inserting Row
+            db.insert("tb_user", null, values);
+            db.close(); // Closing database connection
+
+        }
+        catch (Exception ex)
+        {
+            Log.d("addOption Error:", ex.toString());
+        }
+    }
+
     public Staff getStaffDetail(String userName)
     {
         Staff staff = new Staff();
@@ -156,15 +191,36 @@ public class DatabaseHandler extends SQLiteOpenHelper
         }
     }
 
-    public void updateOption (String optionName, String optionValue)
+    public String getValueOption(String nameOption)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query("tb_option", new String[] { "value" }
+                , "name" + "=?",
+                new String[] { String.valueOf(nameOption) }, null, null, null, null);
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        return cursor.getString(0);
+    }
+
+    public int setValueOption(String nameOption, String value)
     {
         try
         {
+            SQLiteDatabase db = this.getWritableDatabase();
 
+            ContentValues values = new ContentValues();
+            values.put("value", value);
+
+            // updating row
+            return db.update("tb_option", values, "name" + " = ?",
+                    new String[] { nameOption });
         }
         catch (Exception ex)
         {
             Log.d("updateOption Error:", ex.toString());
+            return 0;
         }
     }
 
@@ -179,18 +235,6 @@ public class DatabaseHandler extends SQLiteOpenHelper
             cursor.moveToFirst();
 
         return Integer.parseInt(cursor.getString(0));
-    }
-
-    public int updateTotalTable(String totalTable)
-    {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put("value", totalTable);
-
-        // updating row
-        return db.update("tb_option", values, "name" + " = ?",
-                new String[] { "totalTable" });
     }
 
 

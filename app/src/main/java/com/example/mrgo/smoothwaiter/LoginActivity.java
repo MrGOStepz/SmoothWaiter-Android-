@@ -1,6 +1,7 @@
 package com.example.mrgo.smoothwaiter;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +17,8 @@ public class LoginActivity extends AppCompatActivity
     Button loginBTN;
     CheckBox rememberPasswordCB;
     TextView forgotPasswordTV;
+    DatabaseHandler db = new DatabaseHandler(this);
+    SharedPreferences prefs = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -29,9 +32,29 @@ public class LoginActivity extends AppCompatActivity
         rememberPasswordCB = (CheckBox) findViewById(R.id.rememberPWCB);
         forgotPasswordTV = (TextView) findViewById(R.id.forgotPWTV);
 
+        prefs = getSharedPreferences("com.example.mrgo.smoothwaiter", MODE_PRIVATE);
+        if(prefs.getBoolean("FIRST_RUN",true))
+        {
+            db.createAdminUser();
+            db.addOption("totalTable","9");
+            db.addOption("checkedRememberPW","0");
+            db.addOption("userName","");
+            db.addOption("password","");
+            prefs.edit().putBoolean("FIRST_RUN",false).commit();
+        }
 
-        userNameET.setText("admin");
-        passwordET.setText("admin");
+        if(db.getValueOption("checkedRememberPW").equals("0"))
+        {
+            rememberPasswordCB.setChecked(false);
+        }
+        else
+        {
+            userNameET.setText(db.getValueOption("userName"));
+            passwordET.setText(db.getValueOption("password"));
+            rememberPasswordCB.setChecked(true);
+        }
+
+        Toast.makeText(this, "Total User " + db.getTotalUser(), Toast.LENGTH_SHORT).show();
 
     }
 
@@ -43,7 +66,6 @@ public class LoginActivity extends AppCompatActivity
 
     public void login(View view)
     {
-        DatabaseHandler db = new DatabaseHandler(this);
         Staff staff;
         int countUser = db.validateUser(userNameET.getText().toString(),passwordET.getText().toString());
         int countOption = db.totalOption();

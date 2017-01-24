@@ -31,6 +31,6 @@ public class SettingActivity extends AppCompatActivity
     public void applyTotalTable(View view)
     {
         DatabaseHandler db = new DatabaseHandler(this);
-        db.updateTotalTable(totalET.getText().toString());
+        db.setValueOption("totalTable",totalET.getText().toString());
     }
 }
