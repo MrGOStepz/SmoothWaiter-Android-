@@ -46,15 +46,17 @@ public class LoginActivity extends AppCompatActivity
         if(db.getValueOption("checkedRememberPW").equals("0"))
         {
             rememberPasswordCB.setChecked(false);
+            db.setCheckedRememberPW(false);
         }
         else
         {
             userNameET.setText(db.getValueOption("userName"));
             passwordET.setText(db.getValueOption("password"));
             rememberPasswordCB.setChecked(true);
+            db.setCheckedRememberPW(true);
         }
 
-        Toast.makeText(this, "Total User " + db.getTotalUser(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Total User " + db.totalOption(), Toast.LENGTH_SHORT).show();
 
     }
 
@@ -74,6 +76,18 @@ public class LoginActivity extends AppCompatActivity
         {
             staff = db.getStaffDetail(userNameET.getText().toString());
 
+            if(rememberPasswordCB.isChecked() == false)
+            {
+                db.setValueOption("userName", "");
+                db.setValueOption("password", "");
+                db.setCheckedRememberPW(false);
+            }
+            else
+            {
+                db.setValueOption("userName", userNameET.getText().toString());
+                db.setValueOption("password", passwordET.getText().toString());
+                db.setCheckedRememberPW(true);
+            }
 
             Intent orderScreen = new Intent(view.getContext(), OrderActivity.class);
             orderScreen.putExtra("stuffKey", staff);
@@ -89,13 +103,6 @@ public class LoginActivity extends AppCompatActivity
 
     public void clickCheckbox(View view)
     {
-        if(rememberPasswordCB.isChecked() == true)
-        {
-            rememberPasswordCB.setChecked(false);
-        }
-        else
-        {
-            rememberPasswordCB.setChecked(true);
-        }
+
     }
 }

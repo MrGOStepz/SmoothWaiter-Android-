@@ -76,13 +76,6 @@ public class OrderActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
-
-
-//        OptionSetting optionSetting = new OptionSetting();
-//        Toast.makeText(this, "Count row" + optionSetting.getTotalRow(), Toast.LENGTH_SHORT).show();
-
-
-
     }
 
 

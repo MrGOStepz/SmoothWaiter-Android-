@@ -237,5 +237,27 @@ public class DatabaseHandler extends SQLiteOpenHelper
         return Integer.parseInt(cursor.getString(0));
     }
 
+    public int setCheckedRememberPW(boolean checked)
+    {
+        String valueChecked;
+        try
+        {
+            valueChecked = checked ? "1" : "0";
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+
+            values.put("value", valueChecked);
+
+            // updating row
+            return db.update("tb_option", values, "name" + " = ?",
+                    new String[] { "checkedRememberPW" });
+        }
+        catch (Exception ex)
+        {
+            Log.d("updateOption Error:", ex.toString());
+            return 0;
+        }
+    }
 
 }
