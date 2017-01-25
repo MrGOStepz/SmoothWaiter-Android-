@@ -1,5 +1,6 @@
 package com.example.mrgo.smoothwaiter;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,5 +33,11 @@ public class SettingActivity extends AppCompatActivity
     {
         DatabaseHandler db = new DatabaseHandler(this);
         db.setValueOption("totalTable",totalET.getText().toString());
+    }
+
+    public void addStaff(View view)
+    {
+        Intent addStaffScreen = new Intent(this,AddStaffActivity.class);
+        startActivity(addStaffScreen);
     }
 }

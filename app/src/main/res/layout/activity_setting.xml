@@ -70,7 +70,8 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="Add Staff"
-            android:id="@+id/addStuffButton"/>
+            android:id="@+id/addStuffButton"
+            android:onClick="addStaff"/>
     </LinearLayout>
 </LinearLayout>
 

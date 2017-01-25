@@ -49,6 +49,9 @@ public class DatabaseHandler extends SQLiteOpenHelper
                     + " level INTEGER,"
                     + " active INTEGER,"
                     + " date_active TEXT);");
+
+
+
         }
         catch (SQLiteAbortException ex)
         {
@@ -110,6 +113,30 @@ public class DatabaseHandler extends SQLiteOpenHelper
         {
             Log.d("addOption Error:", ex.toString());
         }
+    }
+
+    public void addStaff(String userName,String password, String name, int level)
+    {
+        try
+        {
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put("username", userName);
+            values.put("password", password);
+            values.put("name", name);
+            values.put("level", level);
+
+            // Inserting Row
+            db.insert("tb_user", null, values);
+            db.close(); // Closing database connection
+
+        }
+        catch (Exception ex)
+        {
+            Log.d("addOption Error:", ex.toString());
+        }
+
     }
 
     public Staff getStaffDetail(String userName)
