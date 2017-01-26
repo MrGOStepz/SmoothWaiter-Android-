@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity
             db.setCheckedRememberPW(true);
         }
 
-        Toast.makeText(this, "Total User " + db.totalOption(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Total Food " + db.getTotalFood(), Toast.LENGTH_SHORT).show();
 
     }
 

@@ -52,7 +52,8 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="Add Dish"
-            android:id="@+id/addDishButton"/>
+            android:id="@+id/addDishButton"
+            android:onClick="addFood"/>
     </LinearLayout>
 
     <LinearLayout

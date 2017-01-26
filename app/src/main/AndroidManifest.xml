@@ -26,6 +26,8 @@
         </activity>
         <activity android:name=".OrderFoodActivity">
         </activity>
+        <activity android:name=".AddDishActivity">
+        </activity>
     </application>
 
 </manifest>

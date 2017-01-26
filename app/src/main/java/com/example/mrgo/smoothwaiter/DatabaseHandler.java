@@ -28,7 +28,6 @@ public class DatabaseHandler extends SQLiteOpenHelper
     public DatabaseHandler(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
     }
 
     @Override
@@ -50,6 +49,17 @@ public class DatabaseHandler extends SQLiteOpenHelper
                     + " active INTEGER,"
                     + " date_active TEXT);");
 
+            db.execSQL("CREATE TABLE IF NOT EXISTS tb_food"
+                    + "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + " name TEXT,"
+                    + " description TEXT,"
+                    + " category_id INTEGER,"
+                    + " price INTEGER);");
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS tb_category"
+                    + "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + " name TEXT UNIQUE);");
+
 
 
         }
@@ -67,6 +77,40 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
         //Create tables again
         onCreate(db);
+    }
+
+    public void addFood(String name,String description, int categoryID, int price)
+    {
+        try
+        {
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put("name", name);
+            values.put("description", description);
+            values.put("category_id", categoryID);
+            values.put("price", price);
+
+            // Inserting Row
+            db.insert("tb_food", null, values);
+            db.close(); // Closing database connection
+
+        }
+        catch (Exception ex)
+        {
+            Log.d("addFood Error:", ex.toString());
+        }
+    }
+
+    public int getTotalFood()
+    {
+        int foodCount;
+        String countFoodSQL = "SELECT * FROM tb_food" ;
+        SQLiteDatabase  db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countFoodSQL,null);
+        foodCount = cursor.getCount();
+        cursor.close();
+        return foodCount;
     }
 
     public int validateUser(String userName, String password)

@@ -40,4 +40,10 @@ public class SettingActivity extends AppCompatActivity
         Intent addStaffScreen = new Intent(this,AddStaffActivity.class);
         startActivity(addStaffScreen);
     }
+
+    public void addFood(View view)
+    {
+        Intent addFoodScreen = new Intent(this,AddDishActivity.class);
+        startActivity(addFoodScreen);
+    }
 }

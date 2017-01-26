@@ -45,6 +45,8 @@ public class OrderActivity extends AppCompatActivity
      */
     private ViewPager mViewPager;
 
+    private DatabaseHandler db = new DatabaseHandler(this);
+    private static int totalTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -76,6 +78,9 @@ public class OrderActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+
+        totalTable = db.getTotalTable();
+        this.setTitle("Smooth Waiter Order");
     }
 
 
@@ -141,9 +146,17 @@ public class OrderActivity extends AppCompatActivity
 
             if(getArguments().getInt(ARG_SECTION_NUMBER) == 1)
             {
+
 //                View rootView = inflater.inflate(R.layout.fragment_table, container, false);
 //                return rootView;
-
+                int table = totalTable;
+                int temp1 = table%3;
+                int temp2 = table/3;
+                int row = table/3;
+                if(temp1 > 0)
+                {
+                    row = 1 + temp2;
+                }
                 //Set a linearLayout to add buttons
                 LinearLayout mainLinearLayout = new LinearLayout(getActivity());
                 // Set the layout full width, full height
@@ -151,43 +164,58 @@ public class OrderActivity extends AppCompatActivity
                 mainLinearLayout.setLayoutParams(params);
                 mainLinearLayout.setOrientation(LinearLayout.VERTICAL); //or VERTICAL
 
-                LinearLayout subLinearLayout = new LinearLayout(getActivity());
-                params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                mainLinearLayout.setLayoutParams(params);
-                mainLinearLayout.setOrientation(LinearLayout.VERTICAL); //or VERTICAL
 
-
-                Button button;
-                for (int i = 0; i < 2; i++)
+                int countTable = 0;
+                Button button = new Button(getActivity());
+                int tableRow = 1;
+                for (int i = 1; i <= row; i++)
                 {
-                    button = new Button(getActivity());
-                    //For buttons visibility, you must set the layout params in order to give some width and height:
-                    params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT,1);
-                    button.setLayoutParams(params);
-                    button.setText("T"+ i+1);
-                    button.setId(View.generateViewId());
-                    button.setOnClickListener(new View.OnClickListener()
+                    if(i==row)
                     {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            Staff staff = new Staff();
-                            staff.setStuffName("555");
-                            Button btn = (Button) v;
-                            btn.getText();
-                            Intent nextScreen = new Intent(v.getContext(), SettingActivity.class);
-
-                            nextScreen.putExtra("staffKey1",staff); //Key and Value pair
-                            startActivityForResult(nextScreen, 1);
-
-                        }
+                        tableRow = temp1 == 0 ? 3 : temp1;
                     }
-                    );
+                    else
+                    {
+                        tableRow = 3;
+                    }
 
-                    subLinearLayout.addView(button);
+                    LinearLayout subLinearLayout = new LinearLayout(getActivity());
+                    params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    subLinearLayout.setLayoutParams(params);
+                    subLinearLayout.setOrientation(LinearLayout.HORIZONTAL); //or VERTICAL
+
+                    for (int j = 1;j <= tableRow;j++)
+                    {
+                        button = new Button(getActivity());
+                        countTable++;
+                        //For buttons visibility, you must set the layout params in order to give some width and height:
+                        params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+                        button.setLayoutParams(params);
+                        button.setText("T" + countTable);
+                        button.setId(View.generateViewId());
+                        button.setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                Staff staff = new Staff();
+                                staff.setStuffName("555");
+                                Button btn = (Button) v;
+                                btn.getText();
+                                Intent nextScreen = new Intent(v.getContext(), SettingActivity.class);
+
+                                nextScreen.putExtra("staffKey1", staff); //Key and Value pair
+                                startActivityForResult(nextScreen, 1);
+
+                            }
+                        });
+                        subLinearLayout.addView(button);
+                    }
+                    mainLinearLayout.addView(subLinearLayout);
                 }
 
-                mainLinearLayout.addView(subLinearLayout);
+
+
 
                 return mainLinearLayout;
             }
