@@ -1,5 +1,6 @@
 package com.example.mrgo.smoothwaiter;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,7 +18,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MenuActivity extends AppCompatActivity
 {
@@ -36,6 +44,20 @@ public class MenuActivity extends AppCompatActivity
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private String staffName = "";
+    private String table = "";
+
+    private DatabaseHandler db = new DatabaseHandler(this);
+
+    private static List<Food> foodMain = new ArrayList<Food>();
+    private static List<Food> foodEntree = new ArrayList<Food>();
+    private static List<Food> foodDesert = new ArrayList<Food>();
+    private static List<Food> foodBeverage = new ArrayList<Food>();
+
+    private static ListAdapter adapter1;
+    private static ListAdapter adapter2;
+    private static ListAdapter adapter3;
+    private static ListAdapter adapter4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -56,19 +78,86 @@ public class MenuActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener()
+        Intent creatingIntent = getIntent();
+        staffName = creatingIntent.getStringExtra("staffKey");
+        table = creatingIntent.getStringExtra("tableKey");
+
+        Toast.makeText(this, "Staff name: " + staffName, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Total: " + table, Toast.LENGTH_SHORT).show();
+
+        this.setTitle("Table "+ table);
+
+
+
+        foodMain = db.getListFood(2);
+        List<String> nameFood = new ArrayList<String>();
+
+        for (int i = 0;i < foodMain.size(); i++)
         {
-            @Override
-            public void onClick(View view)
-            {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+            nameFood.add(foodMain.get(i).getName());
+        }
+        String[] strFood = nameFood.toArray(new String[0]);
+        adapter2 = new StaffAdapter(MenuActivity.this,strFood);
+
+        foodMain = db.getListFood(1);
+        nameFood = new ArrayList<String>();
+
+        for (int i = 0;i < foodMain.size(); i++)
+        {
+            nameFood.add(foodMain.get(i).getName());
+        }
+        strFood = nameFood.toArray(new String[0]);
+        adapter1 = new StaffAdapter(MenuActivity.this,strFood);
+
+        foodMain = db.getListFood(3);
+        nameFood = new ArrayList<String>();
+
+        for (int i = 0;i < foodMain.size(); i++)
+        {
+            nameFood.add(foodMain.get(i).getName());
+        }
+        strFood = nameFood.toArray(new String[0]);
+        adapter3 = new StaffAdapter(MenuActivity.this,strFood);
+
+        foodMain = db.getListFood(4);
+        nameFood = new ArrayList<String>();
+
+        for (int i = 0;i < foodMain.size(); i++)
+        {
+            nameFood.add(foodMain.get(i).getName());
+        }
+        strFood = nameFood.toArray(new String[0]);
+        adapter4 = new StaffAdapter(MenuActivity.this,strFood);
+
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.list_menu_actionbar) {
+
+            Intent orderScreen = new Intent(this,SettingActivity.class);
+            startActivity(orderScreen);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
     /**
      * A placeholder fragment containing a simple view.
@@ -102,10 +191,54 @@ public class MenuActivity extends AppCompatActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState)
         {
-            View rootView = inflater.inflate(R.layout.fragment_menu, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
+            if(getArguments().getInt(ARG_SECTION_NUMBER) == 1)
+            {
+                View rootView = inflater.inflate(R.layout.fragment_menu, container, false);
+
+                ListView menuLV  = (ListView) rootView.findViewById(R.id.menuListView);
+                menuLV.setAdapter(adapter1);
+                Button showListMenuBTN = (Button) rootView.findViewById(R.id.showListMenuButton);
+                showListMenuBTN.setText("Show List Menu");
+                return rootView;
+            }
+            else if(getArguments().getInt(ARG_SECTION_NUMBER) == 2)
+            {
+                View rootView = inflater.inflate(R.layout.fragment_menu, container, false);
+
+                ListView menuLV  = (ListView) rootView.findViewById(R.id.menuListView);
+                menuLV.setAdapter(adapter2);
+                Button showListMenuBTN = (Button) rootView.findViewById(R.id.showListMenuButton);
+                showListMenuBTN.setText("Show List Menu");
+                return rootView;
+            }
+            else if(getArguments().getInt(ARG_SECTION_NUMBER) == 3)
+            {
+                View rootView = inflater.inflate(R.layout.fragment_menu, container, false);
+
+                ListView menuLV  = (ListView) rootView.findViewById(R.id.menuListView);
+                menuLV.setAdapter(adapter3);
+                Button showListMenuBTN = (Button) rootView.findViewById(R.id.showListMenuButton);
+                showListMenuBTN.setText("Show List Menu");
+                return rootView;
+            }
+            else if(getArguments().getInt(ARG_SECTION_NUMBER) == 4)
+            {
+                View rootView = inflater.inflate(R.layout.fragment_menu, container, false);
+
+                ListView menuLV  = (ListView) rootView.findViewById(R.id.menuListView);
+                menuLV.setAdapter(adapter4);
+                Button showListMenuBTN = (Button) rootView.findViewById(R.id.showListMenuButton);
+                showListMenuBTN.setText("Show List Menu");
+
+                return rootView;
+            }
+            else
+            {
+                View rootView = inflater.inflate(R.layout.fragment_menu, container, false);
+                TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+                textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+                return rootView;
+            }
         }
     }
 

@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static android.content.ContentValues.TAG;
 
 /**
@@ -79,6 +82,50 @@ public class DatabaseHandler extends SQLiteOpenHelper
         onCreate(db);
     }
 
+    public List<Food> getListFood(int categoryID)
+    {
+        List<Food> foodsList = new ArrayList<Food>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM tb_food WHERE category_id = '"+ categoryID +"'";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Food food = new Food();
+                food.setId(Integer.parseInt(cursor.getString(0)));
+                food.setName(cursor.getString(1));
+                food.setDescription(cursor.getString(2));
+                switch (categoryID)
+                {
+                    case 1:
+                        food.setCategory("Entree");
+                        break;
+                    case 2:
+                        food.setCategory("Main");
+                        break;
+                    case 3:
+                        food.setCategory("Desert");
+                        break;
+                    case 4:
+                        food.setCategory("Beverage");
+                        break;
+                    default:
+                        break;
+                }
+
+                food.setPrice(Integer.parseInt(cursor.getString(4)));
+                // Adding contact to list
+                foodsList.add(food);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return foodsList;
+    }
+
     public void addFood(String name,String description, int categoryID, int price)
     {
         try
@@ -100,6 +147,32 @@ public class DatabaseHandler extends SQLiteOpenHelper
         {
             Log.d("addFood Error:", ex.toString());
         }
+    }
+
+    public List<Staff> getAllStaff()
+    {
+        List<Staff> staffList = new ArrayList<Staff>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM tb_user";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Staff staff = new Staff();
+                staff.setId(Integer.parseInt(cursor.getString(0)));
+                staff.setUserName(cursor.getString(1));
+                staff.setStuffName(cursor.getString(3));
+                staff.setStuffLevel(Integer.parseInt(cursor.getString(4)));
+                // Adding contact to list
+                staffList.add(staff);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return staffList;
     }
 
 
@@ -178,7 +251,6 @@ public class DatabaseHandler extends SQLiteOpenHelper
             values.put("password", "admin");
             values.put("name", "admin");
             values.put("level", "3");
-
 
             // Inserting Row
             db.insert("tb_user", null, values);

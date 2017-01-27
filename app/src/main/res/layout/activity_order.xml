@@ -45,6 +45,8 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/add"
-        app:backgroundTint="@android:color/holo_orange_dark"/>
+        app:backgroundTint="@android:color/holo_orange_dark"
+        android:onClick="addMenu"
+        />
 
 </android.support.design.widget.CoordinatorLayout>

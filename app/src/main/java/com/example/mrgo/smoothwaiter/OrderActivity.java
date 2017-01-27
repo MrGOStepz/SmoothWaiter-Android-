@@ -21,11 +21,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.Inflater;
 
 public class OrderActivity extends AppCompatActivity
 {
@@ -47,6 +54,9 @@ public class OrderActivity extends AppCompatActivity
 
     private DatabaseHandler db = new DatabaseHandler(this);
     private static int totalTable;
+    private static List<Staff> staffList = new ArrayList<Staff>();
+
+    private static ListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,13 +84,28 @@ public class OrderActivity extends AppCompatActivity
             @Override
             public void onClick(View view)
             {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+
+                Intent menuScreen = new Intent(view.getContext(),MenuActivity.class);
+                menuScreen.putExtra("staffKey", CurrentUserLogin.getName()); //Key and Value pair
+                menuScreen.putExtra("tableKey", "");
+                startActivityForResult(menuScreen, 1);
             }
         });
 
         totalTable = db.getTotalTable();
         this.setTitle("Smooth Waiter Order");
+
+        staffList = db.getAllStaff();
+        List<String> nameStaff = new ArrayList<>();
+        for (int i = 0;i < staffList.size(); i++)
+        {
+            nameStaff.add(staffList.get(i).getStuffName());
+        }
+        String[] strStaff = nameStaff.toArray(new String[0]);
+        adapter = new StaffAdapter(OrderActivity.this,strStaff);
+
     }
 
 
@@ -110,6 +135,7 @@ public class OrderActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+
 
     /**
      * A placeholder fragment containing a simple view.
@@ -192,6 +218,7 @@ public class OrderActivity extends AppCompatActivity
                         params = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
                         button.setLayoutParams(params);
                         button.setText("T" + countTable);
+                        button.setTag(countTable);
                         button.setId(View.generateViewId());
                         button.setOnClickListener(new View.OnClickListener()
                         {
@@ -199,12 +226,13 @@ public class OrderActivity extends AppCompatActivity
                             public void onClick(View v)
                             {
                                 Staff staff = new Staff();
-                                staff.setStuffName("555");
+                                staff.setStuffName(CurrentUserLogin.getName());
                                 Button btn = (Button) v;
                                 btn.getText();
-                                Intent nextScreen = new Intent(v.getContext(), SettingActivity.class);
+                                Intent nextScreen = new Intent(v.getContext(), MenuActivity.class);
 
-                                nextScreen.putExtra("staffKey1", staff); //Key and Value pair
+                                nextScreen.putExtra("staffKey", CurrentUserLogin.getName()); //Key and Value pair
+                                nextScreen.putExtra("tableKey", btn.getTag().toString());
                                 startActivityForResult(nextScreen, 1);
 
                             }
@@ -213,16 +241,24 @@ public class OrderActivity extends AppCompatActivity
                     }
                     mainLinearLayout.addView(subLinearLayout);
                 }
-
-
-
-
                 return mainLinearLayout;
             }
-            View rootView = inflater.inflate(R.layout.fragment_order, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
+            else if(getArguments().getInt(ARG_SECTION_NUMBER) == 3)
+            {
+                View rootView = inflater.inflate(R.layout.fragment_staff, container, false);
+
+                ListView staffLV  = (ListView) rootView.findViewById(R.id.stuffStatusListView);
+                staffLV.setAdapter(adapter);
+
+                return rootView;
+            }
+            else
+            {
+                View rootView = inflater.inflate(R.layout.fragment_order, container, false);
+                TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+                textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+                return rootView;
+            }
         }
     }
 

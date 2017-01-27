@@ -99,6 +99,8 @@ public class LoginActivity extends AppCompatActivity
             startActivity(orderScreen);
             Toast.makeText(this, "Password correct", Toast.LENGTH_SHORT).show();
             Toast.makeText(this, "Total Option " + countOption, Toast.LENGTH_SHORT).show();
+
+            CurrentUserLogin.setName(userNameET.getText().toString());
         }
         else
         {
