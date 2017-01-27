@@ -40,6 +40,11 @@ public class LoginActivity extends AppCompatActivity
             db.addOption("checkedRememberPW","0");
             db.addOption("userName","");
             db.addOption("password","");
+            db.addCategory("Entree");
+            db.addCategory("Main");
+            db.addCategory("Desert");
+            db.addCategory("Beverage");
+
             prefs.edit().putBoolean("FIRST_RUN",false).commit();
         }
 
@@ -101,8 +106,4 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
-    public void clickCheckbox(View view)
-    {
-
-    }
 }

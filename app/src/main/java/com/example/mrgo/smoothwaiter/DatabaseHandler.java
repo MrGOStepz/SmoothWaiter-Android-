@@ -102,6 +102,38 @@ public class DatabaseHandler extends SQLiteOpenHelper
         }
     }
 
+
+    public int getCategoryCount()
+    {
+        int categoryCount;
+        String countCategorySQL = "SELECT * FROM tb_category" ;
+        SQLiteDatabase  db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countCategorySQL,null);
+        categoryCount = cursor.getCount();
+        cursor.close();
+        return categoryCount;
+    }
+
+    public void addCategory(String name)
+    {
+        try
+        {
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put("name", name);
+
+            // Inserting Row
+            db.insert("tb_category", null, values);
+            db.close(); // Closing database connection
+
+        }
+        catch (Exception ex)
+        {
+            Log.d("addOption Error:", ex.toString());
+        }
+    }
+
     public int getTotalFood()
     {
         int foodCount;
