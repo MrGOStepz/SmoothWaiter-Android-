@@ -45,6 +45,10 @@ public class LoginActivity extends AppCompatActivity
             db.addCategory("Desert");
             db.addCategory("Beverage");
 
+            userNameET.setText("admin");
+            passwordET.setText("admin");
+            rememberPasswordCB.setChecked(true);
+
             prefs.edit().putBoolean("FIRST_RUN",false).commit();
         }
 
