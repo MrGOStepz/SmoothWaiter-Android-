@@ -108,4 +108,8 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
+    public void clickCheckbox(View view)
+    {
+        //Nothing
+    }
 }

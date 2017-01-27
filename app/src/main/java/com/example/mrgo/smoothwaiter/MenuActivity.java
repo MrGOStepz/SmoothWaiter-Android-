@@ -50,9 +50,6 @@ public class MenuActivity extends AppCompatActivity
     private DatabaseHandler db = new DatabaseHandler(this);
 
     private static List<Food> foodMain = new ArrayList<Food>();
-    private static List<Food> foodEntree = new ArrayList<Food>();
-    private static List<Food> foodDesert = new ArrayList<Food>();
-    private static List<Food> foodBeverage = new ArrayList<Food>();
 
     private static ListAdapter adapter1;
     private static ListAdapter adapter2;
@@ -82,11 +79,10 @@ public class MenuActivity extends AppCompatActivity
         staffName = creatingIntent.getStringExtra("staffKey");
         table = creatingIntent.getStringExtra("tableKey");
 
-        Toast.makeText(this, "Staff name: " + staffName, Toast.LENGTH_SHORT).show();
-        Toast.makeText(this, "Total: " + table, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Table: " + table, Toast.LENGTH_SHORT).show();
 
         this.setTitle("Table "+ table);
-
+        ListOrderMenu.Table = table;
 
 
         foodMain = db.getListFood(2);
@@ -97,7 +93,7 @@ public class MenuActivity extends AppCompatActivity
             nameFood.add(foodMain.get(i).getName());
         }
         String[] strFood = nameFood.toArray(new String[0]);
-        adapter2 = new StaffAdapter(MenuActivity.this,strFood);
+        adapter2 = new MenuAdapter(MenuActivity.this,strFood);
 
         foodMain = db.getListFood(1);
         nameFood = new ArrayList<String>();
@@ -107,7 +103,7 @@ public class MenuActivity extends AppCompatActivity
             nameFood.add(foodMain.get(i).getName());
         }
         strFood = nameFood.toArray(new String[0]);
-        adapter1 = new StaffAdapter(MenuActivity.this,strFood);
+        adapter1 = new MenuAdapter(MenuActivity.this,strFood);
 
         foodMain = db.getListFood(3);
         nameFood = new ArrayList<String>();
@@ -117,7 +113,7 @@ public class MenuActivity extends AppCompatActivity
             nameFood.add(foodMain.get(i).getName());
         }
         strFood = nameFood.toArray(new String[0]);
-        adapter3 = new StaffAdapter(MenuActivity.this,strFood);
+        adapter3 = new MenuAdapter(MenuActivity.this,strFood);
 
         foodMain = db.getListFood(4);
         nameFood = new ArrayList<String>();
@@ -127,8 +123,7 @@ public class MenuActivity extends AppCompatActivity
             nameFood.add(foodMain.get(i).getName());
         }
         strFood = nameFood.toArray(new String[0]);
-        adapter4 = new StaffAdapter(MenuActivity.this,strFood);
-
+        adapter4 = new MenuAdapter(MenuActivity.this,strFood);
 
     }
 
@@ -151,7 +146,7 @@ public class MenuActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.list_menu_actionbar) {
 
-            Intent orderScreen = new Intent(this,SettingActivity.class);
+            Intent orderScreen = new Intent(this,ListOrderActivity.class);
             startActivity(orderScreen);
             return true;
         }

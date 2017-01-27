@@ -1,5 +1,6 @@
 package com.example.mrgo.smoothwaiter;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -15,6 +17,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,7 +59,9 @@ public class OrderActivity extends AppCompatActivity
     private static int totalTable;
     private static List<Staff> staffList = new ArrayList<Staff>();
 
-    private static ListAdapter adapter;
+    private static ListAdapter adapter,adapter1;
+    private EditText tableET;
+    private static String tableName = "Empty";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -78,6 +83,9 @@ public class OrderActivity extends AppCompatActivity
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
+
+        tableET = new EditText(OrderActivity.this);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener()
         {
@@ -87,10 +95,27 @@ public class OrderActivity extends AppCompatActivity
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 
-                Intent menuScreen = new Intent(view.getContext(),MenuActivity.class);
-                menuScreen.putExtra("staffKey", CurrentUserLogin.getName()); //Key and Value pair
-                menuScreen.putExtra("tableKey", "");
-                startActivityForResult(menuScreen, 1);
+                tableET.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_NUMBER);
+                new AlertDialog.Builder(OrderActivity.this)
+                        .setTitle("Table")
+                        .setView(tableET)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent menuScreen = new Intent(OrderActivity.this,MenuActivity.class);
+                                menuScreen.putExtra("staffKey", CurrentUserLogin.getName()); //Key and Value pair
+                                menuScreen.putExtra("tableKey", tableET.getText().toString());
+                                startActivityForResult(menuScreen, 1);
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+
+
             }
         });
 
@@ -106,6 +131,22 @@ public class OrderActivity extends AppCompatActivity
         String[] strStaff = nameStaff.toArray(new String[0]);
         adapter = new StaffAdapter(OrderActivity.this,strStaff);
 
+
+        int getCountActiveTable = db.getCountActiveTable();
+        if(getCountActiveTable > 0)
+        {
+            List<String> listTableActive = new ArrayList<String>();
+            listTableActive = db.getListTableActive();
+            ListFoodStatus listFoodStatus = db.getListFoodStatus(listTableActive.get(0));
+            tableName = listFoodStatus.getTable();
+            List<String> listOfFood = new ArrayList<String>();
+            for (int i = 0;i < listFoodStatus.listFood.size();i++)
+            {
+                listOfFood.add(listFoodStatus.listFood.get(i).getName());
+            }
+            String[] strTable = listOfFood.toArray(new String[0]);
+            adapter1 = new StaffAdapter(OrderActivity.this,strTable);
+        }
     }
 
 
@@ -252,6 +293,20 @@ public class OrderActivity extends AppCompatActivity
 
                 return rootView;
             }
+            else if(getArguments().getInt(ARG_SECTION_NUMBER) == 2)
+            {
+                View rootView = inflater.inflate(R.layout.fragment_status, container, false);
+
+                ListView menuLV  = (ListView) rootView.findViewById(R.id.dishStatusT1ListView);
+                TextView tableNameTV = (TextView) rootView.findViewById(R.id.dishStatusTextView);
+
+                tableNameTV.setText("Table " + tableName);
+
+                menuLV.setAdapter(adapter1);
+
+                return rootView;
+            }
+
             else
             {
                 View rootView = inflater.inflate(R.layout.fragment_order, container, false);

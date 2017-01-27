@@ -63,7 +63,13 @@ public class DatabaseHandler extends SQLiteOpenHelper
                     + "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + " name TEXT UNIQUE);");
 
-
+            db.execSQL("CREATE TABLE IF NOT EXISTS tb_menuorder"
+                    + "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + " tablename TEXT,"
+                    + " foodname TEXT,"
+                    + " staffname TEXT,"
+                    + " price INTEGER,"
+                    + " active INTEGER);");
 
         }
         catch (SQLiteAbortException ex)
@@ -80,6 +86,86 @@ public class DatabaseHandler extends SQLiteOpenHelper
 
         //Create tables again
         onCreate(db);
+    }
+
+    public List<String> getListTableActive()
+    {
+        List<String> tableList = new ArrayList<String>();
+        // Select All Query
+        String selectQuery = "SELECT DISTINCT tablename FROM tb_menuorder WHERE active = '1'";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                tableList.add(cursor.getString(0));
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return tableList;
+    }
+
+    public int getCountActiveTable()
+    {
+        int countTableActive;
+        String countTableActiveSQL = "SELECT DISTINCT tablename FROM tb_menuorder WHERE active = '1'" ;
+        SQLiteDatabase  db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countTableActiveSQL,null);
+        countTableActive = cursor.getCount();
+        cursor.close();
+        return countTableActive;
+    }
+
+    public ListFoodStatus getListFoodStatus(String table)
+    {
+        ListFoodStatus listFoodStatus = new ListFoodStatus();
+        // Select All Query
+        String selectQuery = "SELECT * FROM tb_menuorder WHERE tablename = '" + table + "' AND active = '1'";
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        Food food;
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                listFoodStatus.setTable(cursor.getString(1));
+                food = new Food();
+                food.setName(cursor.getString(2));
+
+                listFoodStatus.setName(cursor.getString(3));
+                // Adding contact to list
+                listFoodStatus.listFood.add(food);
+            } while (cursor.moveToNext());
+        }
+        // return contact list
+        return listFoodStatus;
+    }
+
+    public void addMenuOrder(String table,String foodName,String staffName)
+    {
+        try
+        {
+            SQLiteDatabase db = this.getWritableDatabase();
+
+            ContentValues values = new ContentValues();
+            values.put("tablename", table);
+            values.put("foodname", foodName);
+            values.put("staffname", staffName);
+            values.put("price", 5);
+            values.put("active", 1);
+
+            // Inserting Row
+            db.insert("tb_menuorder", null, values);
+            db.close(); // Closing database connection
+
+        }
+        catch (Exception ex)
+        {
+            Log.d("addMenuOrder Error:", ex.toString());
+        }
     }
 
     public List<Food> getListFood(int categoryID)
@@ -136,6 +222,7 @@ public class DatabaseHandler extends SQLiteOpenHelper
             values.put("name", name);
             values.put("description", description);
             values.put("category_id", categoryID);
+
             values.put("price", price);
 
             // Inserting Row

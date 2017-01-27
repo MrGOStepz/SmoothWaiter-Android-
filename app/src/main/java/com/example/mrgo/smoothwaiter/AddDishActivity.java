@@ -91,6 +91,10 @@ public class AddDishActivity extends AppCompatActivity
 
         try
         {
+            if(priceET.getText().toString().equals(""))
+            {
+                priceET.setText("0");
+            }
             db.addFood(foodNameET.getText().toString(),descriptionFoodET.getText().toString(),categoryID, Integer.parseInt(priceET.getText().toString()));
             Toast.makeText(this, "Add Food Complete", Toast.LENGTH_SHORT).show();
 
