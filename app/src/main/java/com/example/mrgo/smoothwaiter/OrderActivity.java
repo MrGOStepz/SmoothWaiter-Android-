@@ -8,6 +8,7 @@ import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ScrollingView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -27,9 +28,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,9 +60,13 @@ public class OrderActivity extends AppCompatActivity
 
     private DatabaseHandler db = new DatabaseHandler(this);
     private static int totalTable;
+    private static int totalActiveTable;
     private static List<Staff> staffList = new ArrayList<Staff>();
 
     private static ListAdapter adapter,adapter1;
+    private static List<ListAdapter> lstAdapter = new ArrayList<>();
+    private static List<String> lstActiveTable = new ArrayList<>();
+    private static List<String> lstActiveTable2 = new ArrayList<>();
     private EditText tableET;
     private static String tableName = "Empty";
 
@@ -120,6 +127,7 @@ public class OrderActivity extends AppCompatActivity
         });
 
         totalTable = db.getTotalTable();
+        totalActiveTable = db.getCountActiveTable();
         this.setTitle("Smooth Waiter Order");
 
         staffList = db.getAllStaff();
@@ -132,20 +140,27 @@ public class OrderActivity extends AppCompatActivity
         adapter = new StaffAdapter(OrderActivity.this,strStaff);
 
 
-        int getCountActiveTable = db.getCountActiveTable();
-        if(getCountActiveTable > 0)
+//        int getCountActiveTable = db.getCountActiveTable();
+        lstActiveTable2 = db.getListTableActive();
+        if(lstActiveTable2.size() > 0)
         {
-            List<String> listTableActive = new ArrayList<String>();
-            listTableActive = db.getListTableActive();
-            ListFoodStatus listFoodStatus = db.getListFoodStatus(listTableActive.get(0));
-            tableName = listFoodStatus.getTable();
-            List<String> listOfFood = new ArrayList<String>();
-            for (int i = 0;i < listFoodStatus.listFood.size();i++)
+            for (int i= 0;i< lstActiveTable2.size();i++)
             {
-                listOfFood.add(listFoodStatus.listFood.get(i).getName());
+                List<String> listTableActive = new ArrayList<String>();
+                listTableActive = db.getListTableActive();
+                ListFoodStatus listFoodStatus = db.getListFoodStatus(listTableActive.get(i));
+                tableName = listFoodStatus.getTable();
+                List<String> listOfFood = new ArrayList<String>();
+                for (int j = 0; j < listFoodStatus.listFood.size(); j++)
+                {
+                    listOfFood.add(listFoodStatus.listFood.get(j).getName());
+                }
+                String[] strTable = listOfFood.toArray(new String[0]);
+                adapter1 = new StaffAdapter(OrderActivity.this, strTable);
+
+                lstAdapter.add(adapter1);
+                lstActiveTable.add(lstActiveTable2.get(i));
             }
-            String[] strTable = listOfFood.toArray(new String[0]);
-            adapter1 = new StaffAdapter(OrderActivity.this,strTable);
         }
     }
 
@@ -297,14 +312,49 @@ public class OrderActivity extends AppCompatActivity
             {
                 View rootView = inflater.inflate(R.layout.fragment_status, container, false);
 
-                ListView menuLV  = (ListView) rootView.findViewById(R.id.dishStatusT1ListView);
-                TextView tableNameTV = (TextView) rootView.findViewById(R.id.dishStatusTextView);
 
-                tableNameTV.setText("Table " + tableName);
+                //Set a linearLayout to add buttons
+                LinearLayout mainLinearLayout = new LinearLayout(getActivity());
+                // Set the layout full width, full height
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                mainLinearLayout.setLayoutParams(params);
+                mainLinearLayout.setOrientation(LinearLayout.VERTICAL); //or VERTICAL
 
-                menuLV.setAdapter(adapter1);
+                //Set a linearLayout to add buttons
+                LinearLayout subLinearLayout = new LinearLayout(getActivity());
+                // Set the layout full width, full height
+                LinearLayout.LayoutParams params5 = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                subLinearLayout.setLayoutParams(params5);
+                subLinearLayout.setOrientation(LinearLayout.VERTICAL); //or VERTICAL
 
-                return rootView;
+                ScrollView scrollView = new ScrollView(getActivity());
+                ScrollView.LayoutParams params1 = new FrameLayout.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                scrollView.setLayoutParams(params1);
+
+                ListView listViewTable;
+                TextView tableNameTV;
+                int sizeArray;
+                for (int i = 0;i < totalActiveTable; i++)
+                {
+                    listViewTable  = new ListView(getActivity());
+
+                    sizeArray = lstAdapter.get(i).getCount();
+                    listViewTable.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, sizeArray * 100));
+                    listViewTable.setId(View.generateViewId());
+                    tableNameTV = new TextView(getActivity());
+                    tableNameTV.setText("Table " + lstActiveTable.get(i));
+
+                    listViewTable.setAdapter(lstAdapter.get(i));
+                    subLinearLayout.addView(tableNameTV);
+                    subLinearLayout.addView(listViewTable);
+//                    mainLinearLayout.addView(tableNameTV);
+//                    mainLinearLayout.addView(listViewTable);
+                }
+                scrollView.addView(subLinearLayout);
+                mainLinearLayout.addView(scrollView);
+//                mainLinearLayout.addView(subLinearLayout);
+
+                return mainLinearLayout;
             }
 
             else
