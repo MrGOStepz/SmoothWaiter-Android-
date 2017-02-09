@@ -144,6 +144,7 @@ public class OrderActivity extends AppCompatActivity
         lstActiveTable2 = db.getListTableActive();
         if(lstActiveTable2.size() > 0)
         {
+            lstActiveTable = new ArrayList<>();
             for (int i= 0;i< lstActiveTable2.size();i++)
             {
                 List<String> listTableActive = new ArrayList<String>();
@@ -339,7 +340,7 @@ public class OrderActivity extends AppCompatActivity
                     listViewTable  = new ListView(getActivity());
 
                     sizeArray = lstAdapter.get(i).getCount();
-                    listViewTable.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, sizeArray * 100));
+                    listViewTable.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, sizeArray * 110));
                     listViewTable.setId(View.generateViewId());
                     tableNameTV = new TextView(getActivity());
                     tableNameTV.setText("Table " + lstActiveTable.get(i));
